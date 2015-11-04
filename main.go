@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crusher"
 	"github.com/codegangsta/cli"
+	"github.com/devonestes/crusher/crusher"
 	_ "github.com/joho/godotenv/autoload"
 	"os"
 )
