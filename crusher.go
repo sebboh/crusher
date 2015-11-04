@@ -1,10 +1,9 @@
-package main
+package crusher
 
 import (
 	"database/sql"
 	"fmt"
-	"github.com/codegangsta/cli"
-	_ "github.com/joho/godotenv/autoload"
+	// Here we auto load the postgres adapter
 	_ "github.com/lib/pq"
 	"io/ioutil"
 	"log"
@@ -13,28 +12,8 @@ import (
 	"strings"
 )
 
-func main() {
-	app := cli.NewApp()
-	app.Name = "crusher"
-	app.Usage = "manage production database views without having to go through engineering"
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:  "materialized, m",
-			Usage: "apply if the view should be materialized",
-		},
-	}
-	app.Action = func(c *cli.Context) {
-		parseCmd(c)
-	}
-
-	app.Run(os.Args)
-}
-
-func parseCmd(c *cli.Context) {
-	command := c.Args()[0]
-	path := c.Args()[1]
-	materialized := c.Bool("m")
-
+// Run injects the CLI context into the main logic of our program.
+func Run(command string, path string, materialized bool) {
 	switch command {
 	case "create":
 		create(path, materialized)
@@ -80,15 +59,10 @@ func openSQLFile(path string, name string) string {
 	if err != nil {
 		log.Fatal("Something went wrong reading the given SQL file")
 	}
-
-	file := string(raw)
-	if validateFile(file, name) != nil {
-		log.Fatal("Your SQL file does not meet the requirements to use this tool.")
-	}
-	return file
+	return validateFile(string(raw), name)
 }
 
-func validateFile(file string, name string) error {
+func validateFile(file string, name string) string {
 	// Ensure the file name isn't in the blacklisted names
 	blacklist := os.Getenv("BLACKLISTED_NAMES")
 	r, err := regexp.Compile(fmt.Sprintf("`,%s,`", name))
@@ -126,11 +100,11 @@ func validateFile(file string, name string) error {
 		log.Fatal("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")
 	}
 
-	return nil
+	return file
 }
 
 func refresh(name string) {
-	q := fmt.Sprintf("REFRESH MATERIALIZED VIEW CONCURRENTLY %s;", name)
+	q := fmt.Sprintf("REFRESH MATERIALIZED VIEW %s;", name)
 	executeSQL(q)
 	fmt.Println(name, "refreshed successfully!")
 }
