@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/devonestes/crusher.svg?branch=master)](https://travis-ci.org/devonestes/crusher)
 # Crusher - a command line tool for creating and managing database views
 Crusher is a command line application that allows a user to have direct control over their own database views & materialized views on a production database. This should allow them to greatly increase their productivity by saving useful queries and chunks of code as views or materialized views, upon which they can build further queries, and also to share amongst other users of that database. It will also remove the dependency of the engineering to implement queries or modifications that users would like to see on the production database, removing a significant blocker from the user's workflow.
 
