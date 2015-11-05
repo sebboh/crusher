@@ -33,7 +33,7 @@ func create(path string, materialized bool) {
 	if materialized {
 		q = fmt.Sprintf("CREATE MATERIALIZED VIEW %s AS %s;", name, file)
 	} else {
-		q = fmt.Sprintf("CREATE OR REPLACE VIEW %s AS %s;", name, file)
+		q = fmt.Sprintf("CREATE VIEW %s AS %s;", name, file)
 	}
 
 	executeSQL(q)
@@ -48,7 +48,7 @@ func update(path string, materialized bool) {
 	if materialized {
 		q = fmt.Sprintf("DROP MATERIALIZED VIEW IF EXISTS %s CASCADE; CREATE MATERIALIZED VIEW %s AS %s;", name, name, file)
 	} else {
-		q = fmt.Sprintf("CREATE OR REPLACE VIEW %s AS %s;", name, file)
+		q = fmt.Sprintf("DROP MATERIALIZED VIEW IF EXISTS %s CASCADE; CREATE VIEW %s AS %s;", name, name, file)
 	}
 
 	executeSQL(q)
