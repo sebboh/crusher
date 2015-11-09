@@ -1,11 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/codegangsta/cli"
 	"github.com/devonestes/crusher/crusher"
-	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/lib/pq"
+	"log"
 	"os"
 )
+
+var blacklist string
+var dbURL string
 
 func main() {
 	app := cli.NewApp()
@@ -17,11 +22,15 @@ func main() {
 			Usage: "apply if the view should be materialized",
 		},
 	}
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatal(err)
+	}
 	app.Action = func(c *cli.Context) {
 		command := c.Args()[0]
 		path := c.Args()[1]
 		materialized := c.Bool("m")
-		crusher.Run(command, path, materialized)
+		crusher.Run(command, path, materialized, blacklist, db)
 	}
 	app.Run(os.Args)
 }

@@ -2,19 +2,21 @@ package crusher
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
-	// Here we auto load the postgres adapter
-	_ "github.com/lib/pq"
 	"io/ioutil"
 	"log"
-	"os"
 	"regexp"
 	"strings"
 )
 
-// Run kicks off the logic of the program and is the main abstraction point from the other third party libraries
-func Run(command string, path string, materialized bool) {
+// This default value of blacklist is for testing purposes. It will be overwritten by the value given in Run on line 19 for the actual execution of the program
+var blacklist = ",blacklists,districts,"
+var db *sql.DB
+
+// Run kicks off the logic of the program and is the main abstraction point from the other third party libraries. It is given a command to execute, a path to a SQL file, a boolean that represents whether the resulting view should be materalized or not, a string representing blacklisted relation names, and a pointer to an active database connection pool.
+func Run(command string, path string, materialized bool, list string, d *sql.DB) {
+	blacklist = list
+	db = d
 	switch command {
 	case "create":
 		create(path, materialized)
@@ -70,40 +72,39 @@ func openSQLFile(path string, name string) string {
 
 func validateFile(file string, name string) (string, error) {
 	// Ensure the file name isn't in the blacklisted names
-	blacklist := os.Getenv("BLACKLISTED_NAMES")
 	r, err := regexp.Compile(fmt.Sprintf(",%s,", name))
 	if err != nil {
-		return file, errors.New("Couldn't compile RexExp for checking against blacklist!")
+		return file, fmt.Errorf("Couldn't compile RexExp for checking against blacklist!")
 	}
 	if r.MatchString(blacklist) == true {
-		return file, errors.New("Your view name is on the blacklist - please choose another!")
+		return file, fmt.Errorf("Your view name is on the blacklist - please choose another!")
 	}
 
 	// Ensure the first word in the query is 'select'
 	r, err = regexp.Compile(`\Aselect\s+`)
 	if err != nil {
-		return file, errors.New("Couldn't compile RexExp for checking for select!")
+		return file, fmt.Errorf("Couldn't compile RexExp for checking for select!")
 	}
 	if r.MatchString(file) != true {
-		return file, errors.New("Your query needs to be a `select` statement!")
+		return file, fmt.Errorf("Your query needs to be a `select` statement!")
 	}
 
 	// Ensure the file has no semi-colons
 	r, err = regexp.Compile(`;`)
 	if err != nil {
-		return file, errors.New("Couldn't compile RexExp for checking for final semi-colon!")
+		return file, fmt.Errorf("Couldn't compile RexExp for checking for final semi-colon!")
 	}
 	if r.MatchString(file) == true {
-		return file, errors.New("Your query cannot contain any semi-colons!")
+		return file, fmt.Errorf("Your query cannot contain any semi-colons!")
 	}
 
 	// Ensure the file has 0 instances of the words 'create', 'delete', 'refresh', 'update', 'insert', 'drop'
 	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*drop\s+`)
 	if err != nil {
-		return file, errors.New("Couldn't compile RexExp checking for command words!")
+		return file, fmt.Errorf("Couldn't compile RexExp checking for command words!")
 	}
 	if r.MatchString(file) == true {
-		return file, errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")
+		return file, fmt.Errorf("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")
 	}
 
 	return file, nil
@@ -116,9 +117,5 @@ func refresh(name string) {
 }
 
 func executeSQL(query string) {
-	db, err := sql.Open("postgres", os.Getenv("DB_URL"))
-	if err != nil {
-		log.Fatal(err)
-	}
 	db.Exec(query)
 }

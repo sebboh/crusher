@@ -2,7 +2,6 @@ package crusher
 
 import (
 	"errors"
-	"os"
 	"testing"
 )
 
@@ -31,8 +30,6 @@ var tests = []struct {
 	// Test that the word `drop` is nowhere in the query
 	{"select * from (drop table districts)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
 }
-
-var _ = os.Setenv("BLACKLISTED_NAMES", ",blacklists,districts,")
 
 func TestValidateFile(t *testing.T) {
 	query := "select * from districts"

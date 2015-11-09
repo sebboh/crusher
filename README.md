@@ -53,6 +53,10 @@ There are two environment variables that need to be set before using.
 
 2) `BLACKLISTED_NAMES`, which is a list of table and/or view names that you do NOT want your users to be able to change (most likely by accident). The format for this should be `,table_1,table_2,table_3,...,table_10,`, with a comma before the first name, a comma between each table name, and a comma after the last name.
 
+### Building the binary
+
+To build the binary for distribution, run `go build -ldflags="-X main.blacklist=INSERT_BLACKLISTED_NAMES_HERE -X main.dbURL=INSERT_DB_URL_HERE"`. Building it that way will link the environment variables to the binary so the end user won't have to do any configuration. The binary then needs to be installed in the user's $PATH.
+
 ## Todos:
 
 - Implement Slack integration to send notifications to a channel when a view is created, updated or refreshed
