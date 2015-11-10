@@ -117,5 +117,8 @@ func refresh(name string) {
 }
 
 func executeSQL(query string) {
-	db.Exec(query)
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
