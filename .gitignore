@@ -23,3 +23,9 @@ _testmain.go
 *.test
 *.prof
 .env
+*.command
+*.sh
+crusher_64
+crusher_32
+crusher_64.exe
+crusher_32.exe
