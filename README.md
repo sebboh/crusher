@@ -59,6 +59,8 @@ To build the binary for distribution, run `go build -ldflags="-X main.blacklist=
 
 ## Todos:
 
+- Come up with a way to manage dependencies between views.
+
 - Implement Slack integration to send notifications to a channel when a view is created, updated or refreshed
 
 - Implement auth so the Slack integration notes who made the change
