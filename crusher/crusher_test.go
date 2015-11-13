@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const wordErr = "Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop - truncate"
+
 var tests = []struct {
 	query string
 	name  string
@@ -18,17 +20,19 @@ var tests = []struct {
 	// Test that there are no semi-colons
 	{"select * from districts;", "a_districts", errors.New("Your query cannot contain any semi-colons!")},
 	// Test that the word `create` is nowhere in the query
-	{"select * from (create table districts as select * from districts_view)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (create table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `delete` is nowhere in the query
-	{"select * from (delete table districts as select * from districts_view)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (delete table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `refresh` is nowhere in the query
-	{"select * from (refresh table districts as select * from districts_view)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (refresh table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `update` is nowhere in the query
-	{"select * from (update table districts as select * from districts_view)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (update table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `insert` is nowhere in the query
-	{"select * from (insert table districts as select * from districts_view)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (insert table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `drop` is nowhere in the query
-	{"select * from (drop table districts)", "a_districts", errors.New("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")},
+	{"select * from (drop table districts)", "a_districts", errors.New(wordErr)},
+	// Test that the word `truncate` is nowhere in the query
+	{"select * from (truncate districts)", "a_districts", errors.New(wordErr)},
 }
 
 func TestValidateFile(t *testing.T) {

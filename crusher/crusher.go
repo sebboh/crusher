@@ -99,12 +99,12 @@ func validateFile(file string, name string) (string, error) {
 	}
 
 	// Ensure the file has 0 instances of the words 'create', 'delete', 'refresh', 'update', 'insert', 'drop'
-	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*drop\s+`)
+	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*drop\s+|\s*truncate\s+`)
 	if err != nil {
 		return file, fmt.Errorf("Couldn't compile RexExp checking for command words!")
 	}
 	if r.MatchString(file) == true {
-		return file, fmt.Errorf("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop")
+		return file, fmt.Errorf("Your query cannot contain any of the following words:\n create - delete - refresh - update - insert - drop - truncate")
 	}
 
 	return file, nil
