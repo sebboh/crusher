@@ -48,9 +48,9 @@ func update(path string, materialized bool) {
 	q := ""
 
 	if materialized {
-		q = fmt.Sprintf("DROP MATERIALIZED VIEW IF EXISTS %s CASCADE; CREATE MATERIALIZED VIEW %s AS %s;", name, name, file)
+		q = fmt.Sprintf("DROP MATERIALIZED VIEW IF EXISTS %s; CREATE MATERIALIZED VIEW %s AS %s;", name, name, file)
 	} else {
-		q = fmt.Sprintf("DROP MATERIALIZED VIEW IF EXISTS %s CASCADE; CREATE VIEW %s AS %s;", name, name, file)
+		q = fmt.Sprintf("CREATE OR REPLACE VIEW %s AS %s;", name, file)
 	}
 
 	executeSQL(q)
