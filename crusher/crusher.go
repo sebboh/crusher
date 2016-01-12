@@ -98,8 +98,8 @@ func validateFile(file string, name string) (string, error) {
 		return file, fmt.Errorf("Your query cannot contain any semi-colons!")
 	}
 
-	// Ensure the file has 0 instances of the words 'create', 'delete', 'refresh', 'update', 'insert', 'drop'
-	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*drop\s+|\s*truncate\s+`)
+	// Ensure the file has 0 instances of the words 'create', 'delete', 'refresh', 'update', 'insert', 'upsert', 'drop'
+	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*upsert\s+|\s*drop\s+|\s*truncate\s+`)
 	if err != nil {
 		return file, fmt.Errorf("Couldn't compile RexExp checking for command words!")
 	}
