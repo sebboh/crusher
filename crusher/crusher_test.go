@@ -14,11 +14,6 @@ var tests = []struct {
 }{
 	// Test blacklist exclusion
 	{"select * from districts", "blacklists", errors.New("Your view name is on the blacklist - please choose another!")},
-	// Test mandatory select statement
-	{"with this, select * from districts", "a_districts", errors.New("Your query needs to be a `select` statement!")},
-	{" select * from districts", "a_districts", errors.New("Your query needs to be a `select` statement!")},
-	// Test that there are no semi-colons
-	{"select * from districts;", "a_districts", errors.New("Your query cannot contain any semi-colons!")},
 	// Test that the word `create` is nowhere in the query
 	{"select * from (create table districts as select * from districts_view)", "a_districts", errors.New(wordErr)},
 	// Test that the word `delete` is nowhere in the query

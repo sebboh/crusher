@@ -80,24 +80,6 @@ func validateFile(file string, name string) (string, error) {
 		return file, fmt.Errorf("Your view name is on the blacklist - please choose another!")
 	}
 
-	// Ensure the first word in the query is 'select'
-	r, err = regexp.Compile(`\Aselect\s+`)
-	if err != nil {
-		return file, fmt.Errorf("Couldn't compile RexExp for checking for select!")
-	}
-	if r.MatchString(file) != true {
-		return file, fmt.Errorf("Your query needs to be a `select` statement!")
-	}
-
-	// Ensure the file has no semi-colons
-	r, err = regexp.Compile(`;`)
-	if err != nil {
-		return file, fmt.Errorf("Couldn't compile RexExp for checking for final semi-colon!")
-	}
-	if r.MatchString(file) == true {
-		return file, fmt.Errorf("Your query cannot contain any semi-colons!")
-	}
-
 	// Ensure the file has 0 instances of the words 'create', 'delete', 'refresh', 'update', 'insert', 'upsert', 'drop'
 	r, err = regexp.Compile(`\s*create\s+|\s*delete\s+|\s*refresh\s+|\s*update\s+|\s*insert\s+|\s*upsert\s+|\s*drop\s+|\s*truncate\s+`)
 	if err != nil {
